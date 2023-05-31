@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ProductsRepository } from 'src/products/products.repository';
+import { UserRepository } from 'src/user/\buser.repository';
 import { DataSource } from 'typeorm';
 import { CompleteOrderDto } from './dto/completeOrder.dto';
 import { TakeAnOrderDto } from './dto/takeAnOrder.dto';
@@ -10,10 +11,17 @@ export class OrdersService {
     constructor(
         private readonly ordersRepository: OrdersRepository,
         private readonly productsRepository: ProductsRepository,
+        private readonly userRepository: UserRepository,
         private readonly dataSource: DataSource
     ) {}
 
     async takeAnOrder(dto: TakeAnOrderDto) {
+        const user = await this.userRepository.getUser(dto.user_id);
+
+        if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
+
+        if(user.isAdmin) throw new UnauthorizedException('관리자는 주문을 할 수 없습니다.');
+
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect(); // 2
         await queryRunner.startTransaction(); // 3
@@ -37,6 +45,12 @@ export class OrdersService {
     }
 
     async completeOrder(dto: CompleteOrderDto) {
+        const user = await this.userRepository.getUser(dto.user_id);
+
+        if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
+
+        if(!user.isAdmin) throw new UnauthorizedException('일반 유저는 주문을 수락 할 수 없습니다.');
+
         const order = await this.ordersRepository.getOrder(dto.order_id);
 
         if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
