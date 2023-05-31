@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNotEmptyObject, IsNumber } from "class-validator";
+import { ArrayNotEmpty, IsNotEmpty, IsNumber } from "class-validator";
 
-class IProduct {
+export class IProduct {
     @ApiProperty({
         description: '상품 번호',
         type: Number,
@@ -35,6 +35,6 @@ export class TakeAnOrderDto {
         isArray: true
     })
     @IsNotEmpty()
-    @IsNotEmptyObject()
+    @ArrayNotEmpty()
     products: IProduct[]
 }

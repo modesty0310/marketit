@@ -22,7 +22,7 @@ export class OrderProduct extends CommonEntity {
         type: Product
     })
     @ManyToOne(() => Product, (product) => product.order_product, {nullable: false})
-    @JoinColumn({name: 'store_id'})
+    @JoinColumn({name: 'product_id'})
     product: Product;
 
     @ApiProperty({

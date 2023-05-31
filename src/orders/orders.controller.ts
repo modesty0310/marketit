@@ -12,6 +12,6 @@ export class OrdersController {
     async takeAnOrder(
         @Body() dto: TakeAnOrderDto
     ) {
-
+        await this.ordersService.takeAnOrder(dto);
     }
 }
