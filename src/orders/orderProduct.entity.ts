@@ -32,6 +32,6 @@ export class OrderProduct extends CommonEntity {
     })
     @IsNotEmpty()
     @IsNumber()
-    @Column()
+    @Column({nullable: false})
     count: number;
 }
