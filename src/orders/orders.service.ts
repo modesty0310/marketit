@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ProductsRepository } from 'src/products/products.repository';
 import { DataSource } from 'typeorm';
+import { CompleteOrderDto } from './dto/completeOrder.dto';
 import { TakeAnOrderDto } from './dto/takeAnOrder.dto';
 import { OrdersRepository } from './orders.repository';
 
@@ -33,5 +34,16 @@ export class OrdersService {
         }
         await queryRunner.commitTransaction();
         await queryRunner.release();
+    }
+
+    async completeOrder(dto: CompleteOrderDto) {
+        const order = await this.ordersRepository.getOrder(dto.order_id);
+
+        if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
+        
+        if(order.permit) throw new BadRequestException('이미 수락된 주문 입니다.');
+
+        const updatedOrder = await this.ordersRepository.completeOrder(dto.order_id);
+        return updatedOrder;
     }
 }

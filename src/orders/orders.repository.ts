@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from "src/products/products.entity";
 import { ProductsRepository } from "src/products/products.repository";
 import { EntityManager, Repository} from "typeorm";
-import { IProduct } from "./dto/takeAnOrder.dto";
 import { OrderProduct } from "./orderProduct.entity";
 import { Order } from "./orders.entity";
 
@@ -23,5 +22,23 @@ export class OrdersRepository {
         const orderProduct = await transactionManager.save(OrderProduct, {order: {id: order.id}, product: {id: updatedProduct.id}, count});
         console.log(order, updatedProduct, orderProduct);
         
+    }
+
+    async getOrder(order_id: number) {
+        const order = await this.orderRepository.findOne({where: {id: order_id}});
+
+        return order;
+    }
+
+    async completeOrder(order_id: number) {
+        const order = await this.orderRepository.createQueryBuilder()
+        .update()
+        .set({
+            permit: true
+        })
+        .where('id = :id', {id: order_id})
+        .execute();
+
+        return order
     }
 }

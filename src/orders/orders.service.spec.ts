@@ -87,8 +87,6 @@ describe('OrdersService', () => {
       }
     })
 
-    it('주문 접수 처리', async () => {
-      
-    })
+
   })
 });
