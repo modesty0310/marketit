@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UserModule } from './user/user.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { UserModule } from './user/user.module';
       logging: process.env.NODE_ENV === 'development' ? true : false,
       legacySpatialSupport: false,
     }),
-    UserModule
+    UserModule,
+    OrdersModule
   ],
   controllers: [],
   providers: [],
