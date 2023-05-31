@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { UserModule } from './user/user.module';
 import { OrdersModule } from './orders/orders.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { OrdersModule } from './orders/orders.module';
       legacySpatialSupport: false,
     }),
     UserModule,
-    OrdersModule
+    OrdersModule,
+    ProductsModule
   ],
   controllers: [],
   providers: [],

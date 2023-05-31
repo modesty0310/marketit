@@ -1,11 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
-import { type } from "os";
 import { CommonEntity } from "src/common/entities/common.entity";
 import { User } from "src/user/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { OrderProduct } from "./orderProduct.entity";
 
-@Entity()
+@Entity('orders')
 export class Order extends CommonEntity {
     @ApiProperty({
         description: '주문 번호',
@@ -29,5 +28,9 @@ export class Order extends CommonEntity {
         example: false,
         default: false
     })
+    @Column({nullable: false, default:false})
     permit: boolean;
+
+    @OneToMany(() => OrderProduct, (order_product) => order_product.order)
+    order_product: OrderProduct
 }
