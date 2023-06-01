@@ -210,6 +210,32 @@ describe('OrdersService', () => {
     })
   })
 
+  describe('주문 조회하기', () => {
+    it('존재 하지 않는 유저', async () => {
+      try {
+        await service.getOrder({user_id: 4, order_id: 1});
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    })
+
+    it('존재 하지 않는 주문', async () => {
+      try {
+        await service.getOrder({user_id: 1, order_id: 4});
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException);
+      }
+    })
+
+    it('다른 사람의 주문을 조회 할 때', async () => {
+      try {
+        await service.getOrder({user_id: 3, order_id: 1});
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    })
+  })
+
   describe('모든 주문 조회하기', () => {
     it('존재 하지 않는 유저', async () => {
       try {
