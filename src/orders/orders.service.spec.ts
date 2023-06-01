@@ -41,9 +41,9 @@ class ProductMockRepository {
 
 }
 class OrderMockRepository {
-  DB: Omit<Order, 'createdAt' | 'updatedAt' | 'user' | 'order_product'>[] = [
-    {id: 1, permit: false},
-    {id: 2, permit: true},
+  DB = [
+    {id: 1, permit: false, user: {id: 1, name: '홍길동', isAdmin: false}},
+    {id: 2, permit: true, user: {id: 3, name: '외부인', isAdmin: false}},
   ]
 
   getOrder(order_id: number) {
@@ -74,9 +74,18 @@ class OrderMockRepository {
   }
 
   createOrder(transactionManager: EntityManager, user_id: number) {
-    const order: Omit<Order, 'createdAt' | 'updatedAt' | 'user' | 'order_product'> = {id: 3, permit: false};
+    const order = {id: 3, permit: false, user: {id: user_id, name: '홍길동', isAdmin: false}};
     this.DB.push(order);
     return order;
+  }
+
+  getAdminOrder() {
+    return this.DB;
+  }
+
+  getAllOrder(user_id: number) {
+    const orders = this.DB.filter(el => el.id === user_id);
+    return orders;
   }
 }
 
@@ -197,33 +206,27 @@ describe('OrdersService', () => {
 
     it('성공적으로 수락한 경우', async () => {
       const result = await service.permitOrder({user_id: 2, order_id: 1});
-      expect(result).toEqual({id: 1, permit: true});
+      expect(result).toEqual({id: 1, permit: true, user: {id: 1, name: '홍길동', isAdmin: false}});
     })
   })
 
-  describe('주문 조회하기', () => {
+  describe('모든 주문 조회하기', () => {
     it('존재 하지 않는 유저', async () => {
       try {
-        await service.getOrder({user_id: 4, order_id: 1});
+        await service.getAllOrder({user_id: 4});
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
     })
 
-    it('존재 하지 않는 주문', async () => {
-      try {
-        await service.getOrder({user_id: 1, order_id: 4});
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadRequestException);
-      }
+    it('관리 자일 경우 모든 주문 리턴', async () => {
+      const result = await service.getAllOrder({user_id: 2});
+      expect(result.length).toBe(2);
     })
 
-    it('다른 사람의 주문을 조회 할 때', async () => {
-      try {
-        await service.getOrder({user_id: 3, order_id: 1});
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-      }
+    it('일반 사용자일 경우 자기 주문만 리턴', async () => {
+      const result = await service.getAllOrder({user_id: 1});
+      expect(result.length).toBe(1);
     })
   })
 });

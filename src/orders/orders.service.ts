@@ -83,12 +83,12 @@ export class OrdersService {
         
         // 권한이 관리자인 경우 모든 주문 목록을 가져온다
         if(user.isAdmin) {
-            const orders = await this.ordersRepository.getAdminOrder()
-            return orders
+            const orders = await this.ordersRepository.getAdminOrder();
+            return orders;
         // 권한이 일반 유저인 경우 자신의 모든 주문 목록을 가져온다
         }else {
-            const orders = await this.ordersRepository.getAllOrder(dto.user_id)
-            return orders
+            const orders = await this.ordersRepository.getAllOrder(dto.user_id);
+            return orders;
         }
     }
 }
