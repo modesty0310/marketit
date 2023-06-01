@@ -52,9 +52,11 @@ export class OrdersService {
         if(!user.isAdmin) throw new UnauthorizedException('일반 유저는 주문을 수락 할 수 없습니다.');
 
         // 주문 유효성 검사
-        const order = await this.ordersRepository.getOrder(dto.order_id);
+        const order = await this.ordersRepository.getOrderDetail(dto.order_id);
         if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
         if(order.permit) throw new BadRequestException('이미 수락된 주문 입니다.');
+
+        // 주문 이 후 상품이 삭제됐을 경우
 
         const updatedOrder = await this.ordersRepository.permitOrder(dto.order_id);
         return updatedOrder;
@@ -66,6 +68,7 @@ export class OrdersService {
         
         if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
         if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
+        // 주문 자와 관리자만 볼 수 있다
         if(user.id !== order.user.id && !user.isAdmin) throw new UnauthorizedException('권한이 없습니다.');
 
         return order;
