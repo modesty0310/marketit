@@ -41,7 +41,6 @@ export class OrdersController {
     async getOrder(
         @Query() dto: GetOrderDto
     ) {
-        console.log(dto);
-        
+        await this.ordersService.getOrder(dto);
     }
 }
