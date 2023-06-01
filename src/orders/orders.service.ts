@@ -3,6 +3,7 @@ import { ProductsRepository } from 'src/products/products.repository';
 import { UserRepository } from 'src/user/user.repository';
 import { DataSource } from 'typeorm';
 import { PermitOrderDto } from './dto/completeOrder.dto';
+import { GetAllOrderDto } from './dto/getAllOrder.dto';
 import { GetOrderDto } from './dto/getOrder.dto';
 import { TakeAnOrderDto } from './dto/takeAnOrder.dto';
 import { OrdersRepository } from './orders.repository';
@@ -69,8 +70,25 @@ export class OrdersService {
         if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
         if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
         // 주문 자와 관리자만 볼 수 있다
+        // 테스트 어려움
         if(user.id !== order.user.id && !user.isAdmin) throw new UnauthorizedException('권한이 없습니다.');
 
         return order;
+    }
+
+    async getAllOrder(dto: GetAllOrderDto) {
+        const user = await this.userRepository.getUser(dto.user_id);
+
+        if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
+        
+        // 권한이 관리자인 경우 모든 주문 목록을 가져온다
+        if(user.isAdmin) {
+            const orders = await this.ordersRepository.getAdminOrder()
+            return orders
+        // 권한이 일반 유저인 경우 자신의 모든 주문 목록을 가져온다
+        }else {
+            const orders = await this.ordersRepository.getAllOrder(dto.user_id)
+            return orders
+        }
     }
 }

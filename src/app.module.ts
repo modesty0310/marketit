@@ -22,7 +22,7 @@ import { ProductsModule } from './products/products.module';
       database: process.env.DB_NAME,
       synchronize: true,
       autoLoadEntities: true,
-      logging: process.env.NODE_ENV === 'development' ? true : false,
+      logging: true,
       legacySpatialSupport: false,
     }),
     UserModule,

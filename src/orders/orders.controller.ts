@@ -3,6 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FailResponseMessageDto } from 'src/common/dto/failResponseMessage.dto';
 import { SuccessReponseMessageDto } from 'src/common/dto/successReponseMessage.dto';
 import { PermitOrderDto } from './dto/completeOrder.dto';
+import { GetAllOrderDto } from './dto/getAllOrder.dto';
 import { GetOrderDto } from './dto/getOrder.dto';
 import { TakeAnOrderDto } from './dto/takeAnOrder.dto';
 import { Order } from './orders.entity';
@@ -43,5 +44,12 @@ export class OrdersController {
         @Query() dto: GetOrderDto
     ): Promise<Order> {
         return await this.ordersService.getOrder(dto);
+    }
+
+    @Get('all') 
+    async getAllOrder(
+        @Query() dto: GetAllOrderDto
+    ): Promise<Order[]> {
+        return await this.ordersService.getAllOrder(dto);
     }
 }

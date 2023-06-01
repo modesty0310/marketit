@@ -44,6 +44,29 @@ export class OrdersRepository {
         return order;
     }
 
+    async getAllOrder(user_id: number) {
+        const orders = await this.orderRepository.createQueryBuilder('order')
+        .leftJoinAndSelect('order.user', 'user')
+        .leftJoinAndSelect('order.order_product', 'order_product',)
+        .leftJoinAndSelect('order_product.product', 'product')
+        .select(['order', 'user', 'order_product.count', 'order_product.id', 'product'])
+        .where('user.id = :id', {id: user_id})
+        .getMany();
+
+        return orders;
+    }
+
+    async getAdminOrder() {
+        const orders = await this.orderRepository.createQueryBuilder('order')
+        .leftJoinAndSelect('order.user', 'user')
+        .leftJoinAndSelect('order.order_product', 'order_product',)
+        .leftJoinAndSelect('order_product.product', 'product')
+        .select(['order', 'user', 'order_product.count', 'order_product.id', 'product'])
+        .getMany();
+
+        return orders;
+    }
+
     async permitOrder(order_id: number) {
         const order = await this.orderRepository.createQueryBuilder()
         .update()
