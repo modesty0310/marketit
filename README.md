@@ -1,19 +1,24 @@
 # MARKETIT 사전과제 
 ### 주문 관리 API (주문 접수처리, 주문 완료처리, 단일 주문조회, 주문 목록조회)
 
-<p align="center">
-  <br>
-  <img src="https://powerful-daegu.s3.ap-northeast-2.amazonaws.com/readme/PowerfulDaegu.png">
-  <br>
-</p>
-
-목차
-
+## 시작 가이드
+```bash
+// nest가 설치 되어 있지 않다면 설치해 주세요
+npm i -g @nestjs/cli
+npm install
+// 실행 하기
+npm run start
+// test
+npm run test
+```
 ## 프로젝트 소개
 
 <p align="justify">
-프로젝트 개요/동기
+기술스택
 </p>
+| JavaScript |
+| :--------: |
+|   ![js]    |
 
 <p align="center">
 GIF Images
@@ -21,11 +26,6 @@ GIF Images
 
 <br>
 
-## 기술 스택
-
-| JavaScript |
-| :--------: |
-|   ![js]    |
 
 <br>
 
