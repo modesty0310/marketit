@@ -62,12 +62,12 @@ export class OrdersService {
 
     async getOrder(dto: GetOrderDto) {
         const user = await this.userRepository.getUser(dto.user_id);
-        const orderProduct = await this.ordersRepository.getOrderDetail(dto.order_id);
-        console.log(user, orderProduct);
+        const order = await this.ordersRepository.getOrderDetail(dto.order_id);
         
-        // if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
-        // if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
-        // if(user.id !== order.user.id && !user.isAdmin) throw new UnauthorizedException('권한이 없습니다.');
+        if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
+        if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
+        if(user.id !== order.user.id && !user.isAdmin) throw new UnauthorizedException('권한이 없습니다.');
 
+        return order;
     }
 }

@@ -17,7 +17,7 @@ export class OrdersRepository {
 
     async createOrder(transactionManager: EntityManager, user_id: number) {
         const order = await transactionManager.save(Order, {user: {id: user_id}, permit: false});
-        
+
         return order;
     }
 
@@ -33,10 +33,12 @@ export class OrdersRepository {
     }
 
     async getOrderDetail(order_id: number) {
-        const order = await this.orderProductRepository.createQueryBuilder('order_product')
-        .leftJoinAndSelect('order_product.user', 'user')
-        .leftJoinAndSelect('order_product.order', 'order')
-        .where('order_product.order_id = :id', {id: order_id})
+        const order = await this.orderRepository.createQueryBuilder('order')
+        .leftJoinAndSelect('order.user', 'user')
+        .leftJoinAndSelect('order.order_product', 'order_product',)
+        .leftJoinAndSelect('order_product.product', 'product')
+        .select(['order', 'user', 'order_product.count', 'order_product.id', 'product'])
+        .where('order.id = :id', {id: order_id})
         .getOne();
 
         return order;

@@ -5,6 +5,7 @@ import { SuccessReponseMessageDto } from 'src/common/dto/successReponseMessage.d
 import { PermitOrderDto } from './dto/completeOrder.dto';
 import { GetOrderDto } from './dto/getOrder.dto';
 import { TakeAnOrderDto } from './dto/takeAnOrder.dto';
+import { Order } from './orders.entity';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -40,7 +41,7 @@ export class OrdersController {
     @Get() 
     async getOrder(
         @Query() dto: GetOrderDto
-    ) {
-        await this.ordersService.getOrder(dto);
+    ): Promise<Order> {
+        return await this.ordersService.getOrder(dto);
     }
 }
