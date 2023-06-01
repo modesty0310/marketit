@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotAcceptableException, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, NotAcceptableException, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FailResponseMessageDto } from 'src/common/dto/failResponseMessage.dto';
 import { SuccessReponseMessageDto } from 'src/common/dto/successReponseMessage.dto';

@@ -67,7 +67,7 @@ class OrderMockRepository {
     const order = this.DB.filter(el => el.id === order_id);
 
     if(order.length) {
-      const result = {...order[0], user: {id: 1, name: '홍길동', isAdmin: false}}
+      const result = {...order[0], user: {id: 1, name: '홍길동', isAdmin: false}, order_product: {product: {id: 1, name: '선풍기', description: '시원한 선풍기', price: 13000, stock: 3}}}
       return result;
     }
     return null;

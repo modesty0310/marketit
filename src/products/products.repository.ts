@@ -10,8 +10,11 @@ export class ProductsRepository {
         private readonly productsRepository: Repository<Product>
     ){}
 
-    async getProduct(id: number) {
-        const product = await this.productsRepository.findOne({where: {id}});
+    async getProduct(id: number) {       
+        const product = await this.productsRepository.createQueryBuilder()
+        .select()
+        .where('id =:id', {id})
+        .getOne();
 
         return product
     }

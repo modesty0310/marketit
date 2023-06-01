@@ -24,13 +24,16 @@ export class OrdersService {
         if(user.isAdmin) throw new UnauthorizedException('관리자는 주문을 할 수 없습니다.');
 
         const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.connect(); // 2
-        await queryRunner.startTransaction(); // 3
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
         
         try {
             const order = await this.ordersRepository.createOrder(queryRunner.manager, dto.user_id);
-            await Promise.all(dto.products.map(async product => {                
+            await Promise.all(dto.products.map(async product => {   
+                // validation check                
+                if(product.id === undefined || product.count === undefined) throw new BadRequestException('인자값을 제대로 보내주세요.');             
                 const findProduct = await this.productsRepository.getProduct(product.id);
+                
                 // 제대로된 상품을 요청했는지 확인
                 if( !findProduct ) throw new BadRequestException('존재 하지 않는 상품입니다.');
                 // 상품 개수가 충분한지 확인
@@ -39,7 +42,7 @@ export class OrdersService {
             }));
         } catch (error) {            
             await queryRunner.rollbackTransaction();
-            await queryRunner.release()
+            await queryRunner.release();
             throw new BadRequestException(error.response.message);
         }
         await queryRunner.commitTransaction();
@@ -56,8 +59,8 @@ export class OrdersService {
         const order = await this.ordersRepository.getOrderDetail(dto.order_id);
         if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
         if(order.permit) throw new BadRequestException('이미 수락된 주문 입니다.');
-        // 주문 이 후 상품이 삭제됐을 경우
-        if(!order.order_product.product) throw new BadRequestException('주문 내역중 삭제된 품목이 있습니다.');
+        // 주문 이후 상품이 삭제됐을 경우
+        if(!order.order_product.product) throw new BadRequestException('주문 내역중 삭제된 상품이 있습니다.');
 
         const updatedOrder = await this.ordersRepository.permitOrder(dto.order_id);
         return updatedOrder;
