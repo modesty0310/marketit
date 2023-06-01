@@ -12,14 +12,14 @@ export class OrderProduct extends CommonEntity {
     id: number;
 
     @ApiProperty({
-        type: Order
+        type: () => Order
     })
     @ManyToOne(() => Order, (order) => order.order_product, {nullable: false})
     @JoinColumn({name: 'order_id'})
     order: Order;
 
     @ApiProperty({
-        type: Product
+        type: () => Product
     })
     @ManyToOne(() => Product, (product) => product.order_product, {nullable: false})
     @JoinColumn({name: 'product_id'})

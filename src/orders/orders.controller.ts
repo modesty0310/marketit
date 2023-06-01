@@ -40,6 +40,9 @@ export class OrdersController {
     }
 
     @Get() 
+    @ApiOperation({ summary: '주문 조회 하기'})
+    @ApiResponse({status: 200, description:"성공", type: Order})
+    @ApiResponse({status: 400, description:"실패", type: FailResponseMessageDto})
     async getOrder(
         @Query() dto: GetOrderDto
     ): Promise<Order> {
@@ -47,6 +50,9 @@ export class OrdersController {
     }
 
     @Get('all') 
+    @ApiOperation({ summary: '모든 주문 조회 하기'})
+    @ApiResponse({status: 200, description:"성공", type: Order, isArray: true})
+    @ApiResponse({status: 400, description:"실패", type: FailResponseMessageDto})
     async getAllOrder(
         @Query() dto: GetAllOrderDto
     ): Promise<Order[]> {

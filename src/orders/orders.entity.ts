@@ -16,7 +16,7 @@ export class Order extends CommonEntity {
 
     @ApiProperty({
         description: '주문한 유저 정보',
-        type: User
+        type: () => User
     })
     @ManyToOne(() => User, (user) => user.order, {nullable: false})
     @JoinColumn({name: 'user_id'})
@@ -31,6 +31,10 @@ export class Order extends CommonEntity {
     @Column({nullable: false, default:false})
     permit: boolean;
 
+    @ApiProperty({
+        description: '주문 정보',
+        type: () => OrderProduct
+    })
     @OneToMany(() => OrderProduct, (order_product) => order_product.order)
     order_product: OrderProduct
 }

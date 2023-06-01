@@ -70,7 +70,6 @@ export class OrdersService {
         if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
         if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
         // 주문 자와 관리자만 볼 수 있다
-        // 테스트 어려움
         if(user.id !== order.user.id && !user.isAdmin) throw new UnauthorizedException('권한이 없습니다.');
 
         return order;
