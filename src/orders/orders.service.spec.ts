@@ -1,11 +1,12 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Product } from 'src/products/products.entity';
 import { ProductsRepository } from 'src/products/products.repository';
 import { OrdersRepository } from './orders.repository';
 import { OrdersService } from './orders.service';
-
 import { DataSource } from "typeorm";
+import { UserRepository } from 'src/user/user.repository';
+import { User } from 'src/user/user.entity';
 
 // @ts-ignore
 export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(() => ({
@@ -23,9 +24,6 @@ export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(() => (
 export type MockType<T> = {
   [P in keyof T]?: jest.Mock<{}>;
 };
-class OrderMockRepository {
-
-}
 
 class ProductMockRepository {
   DB: Omit<Product, 'order_product' | 'createdAt' | 'updatedAt'>[] = [
@@ -33,10 +31,27 @@ class ProductMockRepository {
     {id: 2, name: '선풍기2', description: '시원한 선풍기2', price: 13000, stock: 5}
   ]
 
-  getProdut(id: number) {
-    const product: Omit<Product, 'order_product' | 'createdAt' | 'updatedAt'>[] = this.DB.filter(el => el.id === id);
+  getProduct(product_id: number) {
+    const product = this.DB.filter(el => el.id === product_id);
 
     if(product.length) return product[0]
+    return null;
+  }
+}
+class OrderMockRepository {
+
+}
+
+class UserMockRepository {
+  DB: Omit<User, 'createdAt' | 'updatedAt' | 'order'>[]  = [
+    {id: 1, name: '홍길동', isAdmin: false},
+    {id: 2, name: '관리자', isAdmin: true}
+  ]
+
+  getUser(user_id: number) {
+    const user = this.DB.filter(el => el.id === user_id);
+    
+    if(user.length) return user[0];
     return null;
   }
 }
@@ -49,12 +64,16 @@ describe('OrdersService', () => {
       providers: [
         OrdersService,
         {
+          provide: ProductsRepository,
+          useClass: ProductMockRepository
+        },
+        {
           provide: OrdersRepository,
           useClass: OrderMockRepository
         },
         {
-          provide: ProductsRepository,
-          useClass: ProductMockRepository
+          provide: UserRepository,
+          useClass: UserMockRepository
         },
         { 
           provide: DataSource, 
@@ -71,9 +90,25 @@ describe('OrdersService', () => {
   });
 
   describe('주문 접수하기', () => {
+    it('존재 하지 않는 유저가 요청할 떄', async () => {
+      try {
+        await service.takeAnOrder({user_id: 3, products: [{id:3, count: 10}]})
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    })
+
+    it('요청 하는 사람이 관리자 일 때 실패', async () => {
+      try {
+        await service.takeAnOrder({user_id: 2, products: [{id:3, count: 10}]})
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    })
+
     it('제대로된 상품을 요청했는지 확인', async () => {
       try {
-        service.takeAnOrder({user_id: 1, products: [{id:3, count: 10}]})
+        await service.takeAnOrder({user_id: 1, products: [{id:3, count: 10}]})
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
       }
@@ -81,7 +116,7 @@ describe('OrdersService', () => {
 
     it('상품 개수가 충분하지 않은경우', async () => {
       try {
-        service.takeAnOrder({user_id: 1, products: [{id:1, count: 10}]});
+        await service.takeAnOrder({user_id: 1, products: [{id:1, count: 10}]});
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
       }

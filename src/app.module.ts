@@ -20,7 +20,7 @@ import { ProductsModule } from './products/products.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_SECRET,
       database: process.env.DB_NAME,
-      synchronize: false,
+      synchronize: true,
       autoLoadEntities: true,
       logging: process.env.NODE_ENV === 'development' ? true : false,
       legacySpatialSupport: false,

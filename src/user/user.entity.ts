@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsString, MaxLength } from "class-validator";
 import { CommonEntity } from "src/common/entities/common.entity";
 import { Order } from "src/orders/orders.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
@@ -24,6 +24,15 @@ export class User extends CommonEntity {
     @MaxLength(20)
     @Column()
     name: string;
+
+    @ApiProperty({
+        description: '사용자 권한',
+        type: Boolean,
+        example: false
+    })
+    @IsBoolean()
+    @Column({default: false})
+    isAdmin: boolean;
 
     @OneToMany(() => Order, (order) => order.user)
     order: Order

@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CompleteOrderDto } from './dto/completeOrder.dto';
+import { GetOrderDto } from './dto/getOrder.dto';
 import { TakeAnOrderDto } from './dto/takeAnOrder.dto';
 import { OrdersService } from './orders.service';
 
@@ -21,6 +22,14 @@ export class OrdersController {
         @Body() dto: CompleteOrderDto
     ) {
         const result = await this.ordersService.completeOrder(dto);
+        
+    }
+
+    @Get() 
+    async getOrder(
+        @Query() dto: GetOrderDto
+    ) {
+        console.log(dto);
         
     }
 }
