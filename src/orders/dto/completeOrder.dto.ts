@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber } from "class-validator";
 
-export class CompleteOrderDto {
+export class PermitOrderDto {
     @ApiProperty({
         description: '유저 아이디',
         type: Number,

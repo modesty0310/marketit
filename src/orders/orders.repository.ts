@@ -30,7 +30,7 @@ export class OrdersRepository {
         return order;
     }
 
-    async completeOrder(order_id: number) {
+    async permitOrder(order_id: number) {
         const order = await this.orderRepository.createQueryBuilder()
         .update()
         .set({

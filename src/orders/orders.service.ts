@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { ProductsRepository } from 'src/products/products.repository';
 import { UserRepository } from 'src/user/user.repository';
 import { DataSource } from 'typeorm';
-import { CompleteOrderDto } from './dto/completeOrder.dto';
+import { PermitOrderDto } from './dto/completeOrder.dto';
 import { TakeAnOrderDto } from './dto/takeAnOrder.dto';
 import { OrdersRepository } from './orders.repository';
 
@@ -44,7 +44,7 @@ export class OrdersService {
         await queryRunner.release();
     }
 
-    async completeOrder(dto: CompleteOrderDto) {
+    async permitOrder(dto: PermitOrderDto) {
         const user = await this.userRepository.getUser(dto.user_id);
 
         if(!user) throw new UnauthorizedException('존재하지 않는 유저 입니다.');
@@ -57,7 +57,7 @@ export class OrdersService {
         
         if(order.permit) throw new BadRequestException('이미 수락된 주문 입니다.');
 
-        const updatedOrder = await this.ordersRepository.completeOrder(dto.order_id);
+        const updatedOrder = await this.ordersRepository.permitOrder(dto.order_id);
         return updatedOrder;
     }
 }
