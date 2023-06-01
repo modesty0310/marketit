@@ -15,12 +15,12 @@ async function bootstrap() {
 
   // swagger 추가
   const config = new DocumentBuilder()
-    .setTitle('대구 아동 급식카드 앱')
-    .setDescription('대구 아동 급식카드 API문서')
+    .setTitle('marketit 사전과제')
+    .setDescription('marketit 사전과제')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api-doc', app, document);
 
   await app.listen(3000);
 }

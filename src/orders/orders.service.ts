@@ -56,8 +56,8 @@ export class OrdersService {
         const order = await this.ordersRepository.getOrderDetail(dto.order_id);
         if(!order) throw new BadRequestException('주문이 존재하지 않습니다.');
         if(order.permit) throw new BadRequestException('이미 수락된 주문 입니다.');
-
         // 주문 이 후 상품이 삭제됐을 경우
+        if(!order.order_product.product) throw new BadRequestException('주문 내역중 삭제된 품목이 있습니다.');
 
         const updatedOrder = await this.ordersRepository.permitOrder(dto.order_id);
         return updatedOrder;
