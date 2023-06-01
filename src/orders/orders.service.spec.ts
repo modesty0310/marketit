@@ -7,6 +7,7 @@ import { OrdersService } from './orders.service';
 import { DataSource } from "typeorm";
 import { UserRepository } from 'src/user/user.repository';
 import { User } from 'src/user/user.entity';
+import { Order } from './orders.entity';
 
 // @ts-ignore
 export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(() => ({
@@ -37,9 +38,30 @@ class ProductMockRepository {
     if(product.length) return product[0]
     return null;
   }
+
 }
 class OrderMockRepository {
+  DB: Omit<Order, 'createdAt' | 'updatedAt' | 'user' | 'order_product'>[] = [
+    {id: 1, permit: false},
+    {id: 2, permit: true},
+  ]
 
+  getOrder(order_id: number) {
+    const order = this.DB.filter(el => el.id === order_id);
+
+    if(order.length) return order[0];
+    return null;
+  }
+
+  completeOrder(order_id: number) {
+    const order = this.DB.filter(el => el.id === order_id);
+
+    if(order.length) {
+      order[0].permit = true;
+      return order[0];
+    }
+    return null;
+  }
 }
 
 class UserMockRepository {
@@ -100,7 +122,7 @@ describe('OrdersService', () => {
 
     it('요청 하는 사람이 관리자 일 때 실패', async () => {
       try {
-        await service.takeAnOrder({user_id: 2, products: [{id:3, count: 10}]})
+        await service.takeAnOrder({user_id: 2, products: [{id:3, count: 10}]});
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
@@ -108,7 +130,7 @@ describe('OrdersService', () => {
 
     it('제대로된 상품을 요청했는지 확인', async () => {
       try {
-        await service.takeAnOrder({user_id: 1, products: [{id:3, count: 10}]})
+        await service.takeAnOrder({user_id: 1, products: [{id:3, count: 10}]});
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
       }
@@ -121,7 +143,44 @@ describe('OrdersService', () => {
         expect(error).toBeInstanceOf(BadRequestException);
       }
     })
+  })
 
+  describe('주문 완료하기', () => {
+    it('존재 하지 않는 유저의 요청일 때', async () => {
+      try {
+        await service.completeOrder({user_id: 3, order_id: 1});
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    })
 
+    it('일반 유저의 수락 요청일 때', async () => {
+      try {
+        await service.completeOrder({user_id: 1, order_id: 1});
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    })
+
+    it('존재 하지 않는 주문일 때', async () => {
+      try {
+        await service.completeOrder({user_id: 2, order_id: 3});
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException);
+      }
+    })
+
+    it('이미 수락된 주문일 때', async () => {
+      try {
+        await service.completeOrder({user_id: 2, order_id: 2});
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException);
+      }
+    })
+
+    it('성공적으로 수락한 경우', async () => {
+      const result = await service.completeOrder({user_id: 2, order_id: 1});
+      expect(result).toEqual({id: 1, permit: true});
+    })
   })
 });
